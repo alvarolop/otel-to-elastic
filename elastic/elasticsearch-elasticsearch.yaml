@@ -1,0 +1,64 @@
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+  namespace: elastic
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  auth: {}
+  http:
+    service:
+      metadata: {}
+      spec:
+        ports:
+          - name: https
+            port: 9200
+            targetPort: 9200
+            protocol: TCP
+    tls:
+      certificate: {}
+  monitoring:
+    logs: {}
+    metrics: {}
+  nodeSets:
+    - config:
+        node.store.allow_mmap: false
+        discovery.type: single-node # Enable single-node mode
+        # https://www.elastic.co/guide/en/elasticsearch/reference/current/license-settings.html
+        xpack.license.self_generated.type: trial # basic / trial 
+      count: 1
+      name: default
+      # To avoid "memory request and limit do not have the same value"
+      podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+              resources:
+                requests:
+                  memory: 2Gi
+                  cpu: 1
+                limits:
+                  memory: 2Gi
+                  cpu: 1
+      # volumeClaimTemplates:
+      # - metadata:
+      #     name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
+      #   spec:
+      #     accessModes:
+      #     - ReadWriteOnce
+      #     resources:
+      #       requests:
+      #         storage: 10Gi
+  remoteClusterServer: {}
+  transport:
+    service:
+      metadata: {}
+      spec: {}
+    tls:
+      certificate: {}
+      certificateAuthorities: {}
+  updateStrategy:
+    changeBudget: {}
+  version: 8.17.1

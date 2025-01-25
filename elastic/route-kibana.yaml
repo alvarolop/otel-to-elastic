@@ -1,0 +1,14 @@
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: kibana
+  namespace: elastic
+spec:
+  tls:
+    # termination: edge
+    termination: passthrough # Kibana is the TLS endpoint
+    insecureEdgeTerminationPolicy: Redirect
+  to:
+    kind: Service
+    name: kibana-kb-http

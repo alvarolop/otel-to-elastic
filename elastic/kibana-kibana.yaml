@@ -1,0 +1,37 @@
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: elastic
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  config:
+    xpack.fleet.packages:
+      - name: apm
+        version: latest
+  count: 1
+  elasticsearchRef:
+    name: elasticsearch
+  enterpriseSearchRef: {}
+  http:
+    service:
+      metadata: {}
+      spec: {}
+    tls:
+      certificate: {}
+  monitoring:
+    logs: {}
+    metrics: {}
+  podTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+        - name: kibana
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+  version: 8.17.1

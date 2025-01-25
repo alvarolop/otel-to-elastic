@@ -1,0 +1,30 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+
+  # Operator installation
+  - sub-elasticsearch-eck-operator-certified.yaml
+  - ns-elastic.yaml
+
+  # Elasticsearch
+  - elasticsearch-elasticsearch.yaml
+  - route-elasticsearch.yaml
+
+  # Kibana
+  - kibana-kibana.yaml
+  - route-kibana.yaml
+
+  # APM Server
+  - apmserver-apm-server.yaml
+  - route-apm-server.yaml
+
+  # APM Standalone Agent
+  - sa-elastic-agent.yaml
+  - rb-elastic-agent-privileged.yaml
+  - cr-elastic-agent.yaml
+  - crb-elastic-agent.yaml
+
+  # - elasticagent-agent-example.yaml
+  - elasticagent-agent-otel-apm.yaml
