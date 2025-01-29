@@ -1,0 +1,129 @@
+---
+kind: OpenTelemetryCollector
+apiVersion: opentelemetry.io/v1beta1
+metadata:
+  name: app-to-kafka
+  namespace: otel
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  mode: deployment
+  serviceAccount: otel-collector
+  resources:
+    requests:
+      cpu: 100m
+      memory: 500Mi
+    limits:
+      cpu: 300m
+      memory: 500Mi
+  autoscaler:
+    minReplicas: 1
+    maxReplicas: 3
+  observability:
+    metrics:
+      enableMetrics: true 
+  config:
+
+    extensions:
+      bearertokenauth:
+        filename: /var/run/secrets/kubernetes.io/serviceaccount/token
+
+    # The Spanmetrics connector receives traces and exports metrics
+    connectors:
+      spanmetrics:
+        metrics_flush_interval: 15s
+
+    receivers:
+      # Enable Thrift receiver for Tekton traces
+      jaeger:
+        protocols:
+          # grpc:
+            # endpoint: 0.0.0.0:14250
+          # thrift_binary:
+            # endpoint: 0.0.0.0:6832 
+          # thrift_compact:
+            # endpoint: 0.0.0.0:6831
+          thrift_http:
+            endpoint: 0.0.0.0:14268
+
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+
+    processors:
+      k8sattributes: {}
+
+    exporters:
+      # https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/debugexporter/README.md
+      debug:
+        verbosity: normal # basic / normal / detailed
+
+      # GRPC exporter to Tempo
+      otlp/tempo:
+        endpoint: tempo-tempo-gateway.openshift-tempo.svc.cluster.local:8090
+        tls:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+        auth:
+          authenticator: bearertokenauth
+        headers:
+          X-Scope-OrgID: dev  # tenantName
+
+      # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/exporter/kafkaexporter/README.md
+      kafka:
+        brokers: ["cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"] 
+        protocol_version: 2.0.0
+        # topic_from_attribute: k8s.namespace.name
+        topic: otlp_spans
+        encoding: otlp_json
+        # auth:
+        #   plain_text: 
+        #     username: example
+        #     password: example
+        #   tls: 
+        #     ca_file: ca.pem
+        #     cert_file: cert.pem
+        #     key_file: key.pem
+        #     insecure: false 
+        #     server_name_override: kafka.example.corp 
+
+      kafka/metrics:
+        brokers: ["cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"] 
+        protocol_version: 2.0.0
+        # topic_from_attribute: k8s.namespace.name
+        topic: otlp_metrics
+        encoding: otlp_json
+      
+      prometheus:
+        add_metric_suffixes: false
+        endpoint: 0.0.0.0:8889
+        resource_to_telemetry_conversion:
+          enabled: true # by default resource attributes are dropped
+
+    service:
+      extensions:
+        - bearertokenauth
+      pipelines:
+        traces:
+          receivers:
+            - otlp
+            # - jaeger
+          processors:
+            - k8sattributes
+          exporters:
+            - otlp/tempo
+            - spanmetrics
+            # - debug
+            - kafka
+        metrics:
+          receivers:
+            - spanmetrics
+          exporters:
+            - kafka/metrics
+      telemetry:
+        # https://opentelemetry.io/docs/collector/internal-telemetry/#configure-internal-logs
+        logs: # Getting the OpenTelemetry Collector logs
+          # encoding: json
+          level: DEBUG # INFO / WARN / DEBUG

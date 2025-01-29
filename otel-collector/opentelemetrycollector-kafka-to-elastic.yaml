@@ -1,0 +1,79 @@
+---
+kind: OpenTelemetryCollector
+apiVersion: opentelemetry.io/v1beta1
+metadata:
+  name: kafka-to-elastic
+  namespace: otel
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  mode: deployment
+  serviceAccount: otel-collector
+  resources:
+    requests:
+      cpu: 100m
+      memory: 500Mi
+    limits:
+      cpu: 300m
+      memory: 500Mi
+  autoscaler:
+    minReplicas: 1
+    maxReplicas: 3
+  observability:
+    metrics:
+      enableMetrics: true 
+  env:
+    - name: ELASTIC_APM_SECRET_TOKEN
+      # oc get secret apm-server-apm-token -o=jsonpath='{.data.secret-token}' -n elastic | base64 --decode
+      valueFrom:
+        secretKeyRef:
+          name: elastic-token
+          key: secret-token
+  config:
+    receivers:
+      kafka:
+        brokers: ["cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"] 
+        protocol_version: 2.0.0
+        topic: otlp_spans
+        encoding: otlp_json
+
+      kafka/metrics:
+        brokers: ["cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"] 
+        protocol_version: 2.0.0
+        topic: otlp_metrics
+        encoding: otlp_json
+
+    exporters:
+      # https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/debugexporter/README.md
+      debug:
+        verbosity: normal # basic / normal / detailed
+
+      # Elastic APM Server Exporter
+      otlp/elk:
+        endpoint: apm-server-apm-http.elastic.svc:8200
+        tls:
+          # insecure: true
+          insecure_skip_verify: true
+        # curl -k -X POST -H "Authorization: Bearer $ELASTIC_APM_SECRET_TOKEN" https://apm-server-apm-http.elastic.svc:8200/
+        headers:
+          Authorization: "Bearer ${env:ELASTIC_APM_SECRET_TOKEN}"
+
+    service:
+      pipelines:
+        traces:
+          receivers:
+            - kafka
+          exporters:
+            - debug
+            - otlp/elk
+        metrics:
+          receivers:
+            - kafka/metrics
+          exporters:
+            - debug
+            - otlp/elk
+      telemetry:
+        # https://opentelemetry.io/docs/collector/internal-telemetry/#configure-internal-logs
+        logs: # Getting the OpenTelemetry Collector logs
+          encoding: json
+          level: INFO # INFO / WARN / DEBUG

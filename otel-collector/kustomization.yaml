@@ -1,0 +1,8 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+
+  - opentelemetrycollector-app-to-kafka.yaml
+  - opentelemetrycollector-kafka-to-elastic.yaml
