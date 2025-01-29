@@ -1,0 +1,24 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app: kafka
+  name: kafka
+  namespace: openshift-gitops
+spec:
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: kafka
+  project: default
+  source:
+    path: kafka
+    repoURL: https://github.com/alvarolop/otel-to-elk.git
+    targetRevision: main
+    helm:
+      values: |
+        clusterDomain: $CLUSTER_DOMAIN
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
