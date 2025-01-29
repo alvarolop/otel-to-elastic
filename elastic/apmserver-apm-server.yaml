@@ -18,4 +18,8 @@ spec:
       spec: {}
     tls:
       certificate: {}
+  # https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-apm-advanced-configuration.html#k8s-apm-customize-configuration
+  # https://www.elastic.co/guide/en/observability/current/apm-agent-auth.html
+  # config:
+
   version: 8.17.1

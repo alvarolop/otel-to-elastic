@@ -33,22 +33,14 @@ rules:
     - update
 - apiGroups: ["apps"]
   resources:
-  - replicasets
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - "apps"
-  resources:
   - statefulsets
   - deployments
   - replicasets
   - daemonsets
   verbs:
-  - "get"
-  - "list"
-  - "watch"
+  - get
+  - list
+  - watch
 - apiGroups: ["batch"]
   resources:
   - jobs
@@ -57,11 +49,10 @@ rules:
   - get
   - list
   - watch
-- apiGroups:
-  - "storage.k8s.io"
+- apiGroups: ["storage.k8s.io"]
   resources:
   - storageclasses
   verbs:
-  - "get"
-  - "list"
-  - "watch"
+  - get
+  - list
+  - watch

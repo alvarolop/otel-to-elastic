@@ -25,7 +25,6 @@ spec:
   nodeSets:
     - config:
         node.store.allow_mmap: false
-        discovery.type: single-node # Enable single-node mode
         # https://www.elastic.co/guide/en/elasticsearch/reference/current/license-settings.html
         xpack.license.self_generated.type: trial # basic / trial 
       count: 1
@@ -42,15 +41,15 @@ spec:
                 limits:
                   memory: 2Gi
                   cpu: 1
-      # volumeClaimTemplates:
-      # - metadata:
-      #     name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
-      #   spec:
-      #     accessModes:
-      #     - ReadWriteOnce
-      #     resources:
-      #       requests:
-      #         storage: 10Gi
+      volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
   remoteClusterServer: {}
   transport:
     service:

@@ -20,11 +20,13 @@ resources:
   - apmserver-apm-server.yaml
   - route-apm-server.yaml
 
-  # APM Standalone Agent
+  # APM Fleet Server
   - sa-elastic-agent.yaml
-  - rb-elastic-agent-privileged.yaml
+  # - rb-elastic-agent-privileged.yaml
   - cr-elastic-agent.yaml
   - crb-elastic-agent.yaml
 
-  # - elasticagent-agent-example.yaml
-  - elasticagent-agent-otel-apm.yaml
+  - agent-fleet-server.yaml
+  - agent-elastic-agent.yaml
+
+  # - agent-otel-agent.yaml

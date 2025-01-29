@@ -8,9 +8,60 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   config:
+    telemetry:
+      optIn: false
+    xpack.fleet.agents.elasticsearch.hosts:
+      - "https://elasticsearch-es-http.elastic.svc:9200"
+    xpack.fleet.agents.fleet_server.hosts: 
+      - "https://fleet-server-agent-http.elastic.svc:8220"
     xpack.fleet.packages:
+      - name: system
+        version: latest
+      - name: elastic_agent
+        version: latest
+      - name: fleet_server
+        version: latest
       - name: apm
         version: latest
+    xpack.fleet.agentPolicies:
+
+      - name: Fleet Server on ECK policy
+        id: eck-fleet-server
+        namespace: default
+        is_managed: true
+        monitoring_enabled:
+          - logs
+          - metrics
+        unenroll_timeout: 900
+        package_policies:
+        - name: fleet_server-1
+          id: fleet_server-1
+          package:
+            name: fleet_server
+
+      - name: Elastic Agent on ECK policy
+        id: eck-agent
+        namespace: default
+        is_managed: true
+        monitoring_enabled:
+          - logs
+          - metrics
+        unenroll_timeout: 900
+        package_policies:
+        - package:
+            name: apm
+          name: apm-otel # Custom APM agent policy name
+          # inputs:
+          #   # https://www.elastic.co/guide/en/apm/server/7.15/input-apm.html
+          #   - type: apm # APM input type for the agent policy.
+          #     enabled: true # Ensure the input is enabled.
+          #     vars:
+          #       - name: host # Define the host for APM server.
+          #         value: "http://0.0.0.0:8200"
+          #       - name: enable_rum # Enable Real User Monitoring (RUM).
+          #         value: true
+          #       - name: secret_token # Set a custom token.
+          #         value: "apm-simple-token" # Example value, adjust as needed.
   count: 1
   elasticsearchRef:
     name: elasticsearch
