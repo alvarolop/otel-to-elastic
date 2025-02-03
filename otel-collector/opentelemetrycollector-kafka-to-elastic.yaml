@@ -32,13 +32,15 @@ spec:
   config:
     receivers:
       kafka:
-        brokers: ["cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"] 
+        brokers:
+          - 'cluster-kafka-bootstrap.kafka.svc.cluster.local:9092'
         protocol_version: 2.0.0
         topic: otlp_spans
         encoding: otlp_json
 
       kafka/metrics:
-        brokers: ["cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"] 
+        brokers:
+          - 'cluster-kafka-bootstrap.kafka.svc.cluster.local:9092'
         protocol_version: 2.0.0
         topic: otlp_metrics
         encoding: otlp_json
@@ -77,3 +79,12 @@ spec:
         logs: # Getting the OpenTelemetry Collector logs
           encoding: json
           level: INFO # INFO / WARN / DEBUG
+        metrics:
+          level: normal # none / basic / normal / detailed
+          # address: ""
+          # readers:
+          #   - pull:
+          #       exporter:
+          #         prometheus:
+          #           host: '0.0.0.0'
+          #           port: 8888

@@ -22,11 +22,12 @@ resources:
 
   # APM Fleet Server
   - sa-elastic-agent.yaml
-  # - rb-elastic-agent-privileged.yaml
   - cr-elastic-agent.yaml
   - crb-elastic-agent.yaml
 
   - agent-fleet-server.yaml
   - agent-elastic-agent.yaml
 
-  # - agent-otel-agent.yaml
+
+# Check that the pods run with the correct SCC:
+# oc get pod -o go-template='{{range .items}}{{$scc := index .metadata.annotations "openshift.io/scc"}}{{.metadata.name}}{{" scc:"}}{{range .spec.containers}}{{$scc}}{{" "}}{{"\n"}}{{end}}{{end}}'

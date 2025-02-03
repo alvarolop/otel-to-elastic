@@ -3,8 +3,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   labels:
-    app: otel-elk
-  name: otel-elk
+    app: otel-elastic
+  name: otel-elastic
   namespace: openshift-gitops
 spec:
   destination:
@@ -13,7 +13,7 @@ spec:
   project: default
   source:
     path: otel-collector
-    repoURL: https://github.com/alvarolop/otel-to-elk.git
+    repoURL: https://github.com/alvarolop/otel-to-elastic.git
     targetRevision: main
   syncPolicy:
     automated:

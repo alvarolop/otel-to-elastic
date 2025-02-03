@@ -13,7 +13,7 @@ spec:
   project: default
   source:
     path: kafka
-    repoURL: https://github.com/alvarolop/otel-to-elk.git
+    repoURL: https://github.com/alvarolop/otel-to-elastic.git
     targetRevision: main
     helm:
       values: |
