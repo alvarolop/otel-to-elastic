@@ -13,9 +13,7 @@
 
 This repository is a proof of concept of an architecture that collects traces from applications that use OpenTelemetry library, stores them in Kafka for high availability and long storage and then sends them to the Elastic stack using the APM server. The following diagram showcases the scenario that we have deployed:
 
-![Architecture Diagram](docs/images/arch-diagram.svg "Architecture Diagram")
-
-
+![Architecture Diagram](docs/images/arch-diagram.png "Architecture Diagram")
 
 
 ## 2. AMQ Streams - Kafka
