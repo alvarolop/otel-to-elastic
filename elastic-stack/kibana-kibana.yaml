@@ -83,6 +83,6 @@ spec:
         - name: kibana
           resources:
             limits:
-              cpu: 1
+              cpu: '1'
               memory: 1Gi
   version: 8.17.1
