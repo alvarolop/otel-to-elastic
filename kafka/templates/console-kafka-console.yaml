@@ -1,17 +1,21 @@
+{{- if .Values.console.enabled }}
 ---
 kind: Console
 apiVersion: console.streamshub.github.com/v1alpha1
 metadata:
   name: kafka-console
-  namespace: openshift-operators
+  namespace: kafka
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "10"
 spec:
   hostname: kafka-console.apps.{{ .Values.clusterDomain }}
   kafkaClusters:
     - name: cluster
       namespace: kafka
       listener: route
-      # credentials:
-      #   kafkaUser:
-      #     name: otel-user
+      properties:
+        values: []
+        valuesFrom: []
+{{- end }}
+  

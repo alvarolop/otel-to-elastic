@@ -1,3 +1,4 @@
+{{- if .Values.console.enabled }}
 ---
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
@@ -12,3 +13,4 @@ spec:
   name: amq-streams-console
   source: redhat-operators
   sourceNamespace: openshift-marketplace
+{{- end }}

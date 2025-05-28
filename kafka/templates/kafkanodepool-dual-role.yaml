@@ -1,0 +1,23 @@
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: dual-role
+  namespace: kafka
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  labels:
+    strimzi.io/cluster: cluster
+spec:
+  replicas: 3
+  roles:
+    - controller
+    - broker
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: 50Gi
+        deleteClaim: false
+        kraftMetadata: shared

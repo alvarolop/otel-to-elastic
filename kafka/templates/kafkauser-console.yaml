@@ -1,0 +1,24 @@
+{{- if .Values.console.enabled }}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: console
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: cluster
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  authentication:
+    type: scram-sha-512
+    password:
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: kafkauser-console-password
+  authorization:
+    type: simple
+    # The configuration of superUser is added at the Kafka cluster level
+    acls: []
+{{- end }}

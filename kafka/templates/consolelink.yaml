@@ -1,0 +1,14 @@
+{{- if .Values.clusterDomain }}
+---
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  name: kafka-console
+spec:
+  href: "https://kafka-console.apps.{{ .Values.clusterDomain }}"
+  location: ApplicationMenu
+  text: "Kafka Console"
+  applicationMenu:
+    section: Observability
+    imageURL: "https://kafka-console.apps.ocp.sandbox2533.opentlc.com/icon.ico?940f7d6ba757595d"
+{{- end }}

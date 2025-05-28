@@ -6,17 +6,33 @@ metadata:
   namespace: kafka
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    strimzi.io/node-pools: enabled
+    strimzi.io/kraft: enabled
 spec:
   kafka:
-    version: 3.8.0
-    replicas: 3
-    # authorization:
-    #   type: simple
+    # Kafka version (recommended)
+    version: 3.9.0
+    # KRaft metadata version (recommended)
+    # metadataVersion: "3.9-IV0"
+    {{- if .Values.authorization.enabled }}
+    authorization:
+      type: simple
+      superUsers:
+        - console
+    {{- end }}
     listeners:
       - name: plain
         port: 9092
         type: internal
         tls: false
+      {{- if .Values.authorization.enabled }}
+      - name: secured
+        port: 9095
+        type: internal
+        authentication:
+          type: scram-sha-512
+        tls: false
+      {{- end }} 
       - name: tls
         port: 9093
         type: internal
@@ -24,21 +40,41 @@ spec:
       # Expose Kafka using a Route
       - name: route
         port: 9094
+        {{- if .Values.authorization.enabled }}
+        authentication:
+          type: scram-sha-512
+        {{- end }} 
         type: route
         tls: true
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: kafka-metrics
+          key: kafka-metrics-config.yml
     config:
       offsets.topic.replication.factor: 3
       transaction.state.log.replication.factor: 3
       transaction.state.log.min.isr: 2
       default.replication.factor: 3
       min.insync.replicas: 2
-      inter.broker.protocol.version: '3.8'
-    storage:
-      type: ephemeral
-  zookeeper:
-    replicas: 3
-    storage:
-      type: ephemeral
+    # Resources requests and limits (recommended)
+    resources:
+      requests:
+        memory: 1Gi
+        cpu: "1"
+      limits:
+        memory: 16Gi
+        cpu: "6"
+    # Logging configuration (optional)
+    logging:
+      type: inline
+      # Los nombres de los loggers los podemos ver en los configmap de cada broker
+      loggers:
+        log4j.logger.kafka.authorizer.logger: INFO
+        logger.authorizer.level: INFO
+        log4j.logger.kafka: INFO
+        log4j.logger.org.apache.kafka: INFO
   entityOperator:
     topicOperator: {}
     userOperator: {}

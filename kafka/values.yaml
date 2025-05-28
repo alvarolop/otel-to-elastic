@@ -3,3 +3,9 @@
 # Declare variables to be passed into your templates.
 
 clusterDomain: ""
+
+authorization:
+  enabled: true
+
+console:
+  enabled: true

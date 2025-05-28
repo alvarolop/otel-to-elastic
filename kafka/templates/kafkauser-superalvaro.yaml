@@ -1,0 +1,41 @@
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: superalvaro
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: cluster
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  authentication:
+    type: scram-sha-512
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: topic
+          name: "*"
+          patternType: literal
+        operations:
+          - All
+#          - Create
+#          - Read
+#          - Write
+#          - Describe
+#          - DescribeConfigs
+      - resource:
+          type: group
+          name: "*"
+          patternType: literal
+        operations:
+          - All
+#           - Read
+#           - Describe
+      - resource:
+          type: cluster
+        operations: 
+          - All
+#          - Read
+#          - Describe

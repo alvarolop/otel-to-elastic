@@ -18,6 +18,12 @@ spec:
     helm:
       values: |
         clusterDomain: $CLUSTER_DOMAIN
+        authentication:
+          enabled: true
+        console:
+          enabled: true
+        kraft:
+          enabled: true
   syncPolicy:
     automated:
       prune: false
