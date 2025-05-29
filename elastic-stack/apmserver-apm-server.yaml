@@ -22,4 +22,4 @@ spec:
   # https://www.elastic.co/guide/en/observability/current/apm-agent-auth.html
   # config:
 
-  version: 8.17.1
+  version: 9.0.1

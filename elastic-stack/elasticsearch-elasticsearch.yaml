@@ -62,4 +62,4 @@ spec:
       certificateAuthorities: {}
   updateStrategy:
     changeBudget: {}
-  version: 8.17.1
+  version: 9.0.1

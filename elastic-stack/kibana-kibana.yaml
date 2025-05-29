@@ -85,4 +85,4 @@ spec:
             limits:
               cpu: '1'
               memory: 1Gi
-  version: 8.17.1
+  version: 9.0.1

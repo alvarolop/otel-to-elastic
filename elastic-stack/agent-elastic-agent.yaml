@@ -7,7 +7,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
-  version: 8.17.1
+  version: 9.0.1
   kibanaRef:
     name: kibana
   fleetServerRef:
