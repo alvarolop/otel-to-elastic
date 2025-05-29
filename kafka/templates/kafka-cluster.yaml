@@ -31,7 +31,7 @@ spec:
         type: internal
         authentication:
           type: scram-sha-512
-        tls: false
+        tls: true
       {{- end }} 
       - name: tls
         port: 9093

@@ -1,0 +1,16 @@
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: otlp-metrics
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: cluster
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  topicName: otlp.metrics
+  config:
+    retention.ms: 604800000
+  partitions: 3
+  replicas: 2

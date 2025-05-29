@@ -1,0 +1,50 @@
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: otel
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: cluster
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  authentication:
+    type: scram-sha-512
+    password:
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: kafkauser-console-password
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: cluster
+        operations: 
+          # - All
+         - Read
+         - Describe
+      - resource:
+          type: topic
+          name: "*"
+          patternType: literal
+        operations:
+          - All
+#          - Create
+#          - Read
+#          - Write
+#          - Describe
+#          - DescribeConfigs
+      - resource:
+          type: topic
+          name: otlp
+          patternType: prefix
+        operations:
+          - All
+      - resource:
+          type: group
+          name: otel
+          patternType: literal
+        operations:
+          - Read

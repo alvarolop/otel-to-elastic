@@ -2,12 +2,15 @@
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
-  name: kafka-quarkus-observability
+  name: otlp-spans
   namespace: kafka
   labels:
     strimzi.io/cluster: cluster
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
-  topicName: tracing.quarkus-observability
-  # ...
+  topicName: otlp.spans
+  config:
+    retention.ms: 604800000
+  partitions: 3
+  replicas: 2
