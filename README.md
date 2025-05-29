@@ -89,7 +89,7 @@ oc apply -f application-elastic-stack.yaml
 oc apply -k elastic-stack/
 ```
 
-Once everything is up and running, to connect to Kibana, use the username `elastic` and retrieve the password using the following command:
+Once everything is up and running, to connect to Kibana web console, use the username `elastic` and retrieve the password using the following command:
 
 ```bash
 oc get secret elasticsearch-es-elastic-user -o=jsonpath='{.data.elastic}' -n elastic | base64 --decode
@@ -110,6 +110,12 @@ First, create a secret in the OpenTelemetry namespace with the Secret Token that
 
 ```bash
 oc create secret generic elastic-token -n otel --from-literal=secret-token=$(oc get secret apm-server-apm-token -n elastic --template='{{index .data "secret-token" | base64decode}}')
+```
+
+Second, create the `kafkauser-otel-credentials` secret in the OpenTelemetry namespace with the credentials to connect to Kafka:
+
+```bash
+oc create secret generic kafkauser-otel-credentials -n otel --from-literal=username=otel --from-literal=password=$(oc get secret kafkauser-otel-password -n kafka --template='{{index .data "password" | base64decode}}')
 ```
 
 Then, just deploy the two instances:

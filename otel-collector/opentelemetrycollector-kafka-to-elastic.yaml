@@ -7,6 +7,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
+  managementState: managed
   mode: deployment
   serviceAccount: otel-collector
   resources:
@@ -33,17 +34,38 @@ spec:
     receivers:
       kafka:
         brokers:
-          - 'cluster-kafka-bootstrap.kafka.svc.cluster.local:9092'
-        protocol_version: 2.0.0
-        topic: otlp_spans
+          - cluster-kafka-bootstrap.kafka:9095
+        protocol_version: 3.9.0
+        topic: otlp.spans
         encoding: otlp_json
+        auth:
+          sasl:
+            mechanism: SCRAM-SHA-512
+            username: console
+            password: password
+            # username: ${env:KAFKA_USERNAME}
+            # password: ${env:KAFKA_PASSWORD}
+          tls:
+            insecure: false
+            insecure_skip_verify: true
 
       kafka/metrics:
         brokers:
-          - 'cluster-kafka-bootstrap.kafka.svc.cluster.local:9092'
-        protocol_version: 2.0.0
-        topic: otlp_metrics
+          - cluster-kafka-bootstrap.kafka:9095
+        protocol_version: 3.9.0
+        topic: otlp.metrics
         encoding: otlp_json
+        auth:
+          sasl:
+            mechanism: SCRAM-SHA-512
+            username: console
+            password: password
+            # username: ${env:KAFKA_USERNAME}
+            # password: ${env:KAFKA_PASSWORD}
+          tls:
+            insecure: false
+            insecure_skip_verify: true
+
 
     exporters:
       # https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/debugexporter/README.md
