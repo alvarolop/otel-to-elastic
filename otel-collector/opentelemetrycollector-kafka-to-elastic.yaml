@@ -24,6 +24,16 @@ spec:
     metrics:
       enableMetrics: true 
   env:
+    - name: KAFKA_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: kafkauser-otel-credentials
+          key: username
+    - name: KAFKA_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: kafkauser-otel-credentials
+          key: password
     - name: ELASTIC_APM_SECRET_TOKEN
       # oc get secret apm-server-apm-token -o=jsonpath='{.data.secret-token}' -n elastic | base64 --decode
       valueFrom:
